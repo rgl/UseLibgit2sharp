@@ -1,0 +1,50 @@
+name: Build
+on: [push]
+jobs:
+  build:
+    runs-on: ubuntu-20.04
+    services:
+      gitea:
+        image: gitea/gitea:1.14.2
+        options: --name gitea
+        volumes:
+          - /etc/timezone:/etc/timezone:ro
+          - /etc/localtime:/etc/localtime:ro
+        env:
+          SECRET_KEY: abracadabra
+        ports:
+          - 3000:3000
+    steps:
+      - uses: actions/checkout@v2
+      - name: Setup .NET Core SDK
+        uses: actions/setup-dotnet@v1
+        with:
+          dotnet-version: '5.0.301'
+      - name: Restore
+        run: dotnet restore
+      - name: Build
+        run: dotnet build --no-restore --configuration Release -warnAsError
+      - name: Test
+        run: |
+          # create user in gitea.
+          docker exec gitea gitea admin user create \
+            --admin \
+            --email jane.doe@example.com \
+            --username jane.doe \
+            --password password
+
+          # create remote repository in gitea.
+          curl \
+            -s \
+            -X POST \
+            -H 'Accept: application/json' \
+            -H 'Authorization: Basic amFuZS5kb2U6cGFzc3dvcmQ=' \
+            -H 'Content-Type: application/json' \
+            -d '{"name": "test"}' \
+            http://localhost:3000/api/v1/user/repos
+
+          # execute our application.
+          ./bin/Release/net5.0/UseLibgit2sharp
+
+          # list the local repository log.
+          git --git-dir tmp/test/.git log --oneline
