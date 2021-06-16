@@ -1,5 +1,6 @@
 using System;
 using System.IO;
+using System.Runtime.InteropServices;
 using LibGit2Sharp;
 using LibGit2Sharp.Handlers;
 
@@ -30,10 +31,7 @@ namespace UseLibgit2sharp
             Console.WriteLine($"libgit2sharp version: {GlobalSettings.Version}");
 
             // create the temporary directory that will host our local test repository.
-            if (Directory.Exists("tmp"))
-            {
-                Directory.Delete("tmp", true);
-            }
+            DeleteDirectory("tmp");
             Directory.CreateDirectory("tmp");
 
             // initialize a test repository.
@@ -70,6 +68,47 @@ namespace UseLibgit2sharp
                 };
                 repo.Network.Push(remote, @"refs/heads/master", pushOptions);
             }
+        }
+
+        // recursively force the deletion of the given directory.
+        // NB on windows, because the git repository files are read-only,
+        //    Directory.Delete will fail with UnauthorizedAccessException,
+        //    so, before deleting a file, we have to remove its read-only
+        //    attribute.
+        private static void DeleteDirectory(string path)
+        {
+            if (!Directory.Exists(path))
+            {
+                return;
+            }
+
+            // on non-Windows use the regular Directory.Delete because they
+            // do not care about the file permissions. to delete a file,
+            // only the parent directory permissions matter.
+            if (!RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+            {
+                Directory.Delete(path, true);
+                return;
+            }
+
+            foreach (var directoryPath in Directory.GetDirectories(path))
+            {
+                DeleteDirectory(directoryPath);
+            }
+
+            foreach (var filePath in Directory.GetFiles(path))
+            {
+                var fileAttributes = File.GetAttributes(filePath);
+
+                if ((fileAttributes & FileAttributes.ReadOnly) == FileAttributes.ReadOnly)
+                {
+                    File.SetAttributes(filePath, fileAttributes ^ FileAttributes.ReadOnly);
+                }
+
+                File.Delete(filePath);
+            }
+
+            Directory.Delete(path);
         }
     }
 }
