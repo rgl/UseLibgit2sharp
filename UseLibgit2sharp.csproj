@@ -9,8 +9,9 @@
 
       Release versions of libgit2sharp still use libssl1.0.0 which was dropped from Ubuntu.
 
-      See https://github.com/libgit2/libgit2sharp/issues/1747
+      See https://github.com/libgit2/libgit2sharp/issues/1747 # for working in ubuntu 20.04.
+      See https://github.com/libgit2/libgit2sharp/pull/1905   # for libgit2 1.1.1.
     -->
-    <PackageReference Include="LibGit2Sharp" Version="0.27.0-preview-0096" />
+    <PackageReference Include="LibGit2Sharp" Version="0.27.0-preview-0119" />
   </ItemGroup>
 </Project>
