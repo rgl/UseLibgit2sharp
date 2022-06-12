@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <OutputType>Exe</OutputType>
-    <TargetFramework>net5.0</TargetFramework>
+    <TargetFramework>net6.0</TargetFramework>
   </PropertyGroup>
   <ItemGroup>
     <!--
@@ -11,7 +11,9 @@
 
       See https://github.com/libgit2/libgit2sharp/issues/1747 # for working in ubuntu 20.04.
       See https://github.com/libgit2/libgit2sharp/pull/1905   # for libgit2 1.1.1.
+      See https://github.com/libgit2/libgit2sharp/pull/1907   # for libgit2 1.2.0. # TODO this is not yet released in a nuget package.
+      See 
     -->
-    <PackageReference Include="LibGit2Sharp" Version="0.27.0-preview-0119" />
+    <PackageReference Include="LibGit2Sharp" Version="0.27.0-preview-0182" />
   </ItemGroup>
 </Project>

@@ -15,11 +15,11 @@ jobs:
         ports:
           - 3000:3000
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - name: Setup .NET Core SDK
-        uses: actions/setup-dotnet@v1
+        uses: actions/setup-dotnet@v2
         with:
-          dotnet-version: '5.0.400'
+          dotnet-version: '6.0.300'
       - name: Restore
         run: dotnet restore
       - name: Build
@@ -44,7 +44,7 @@ jobs:
             http://localhost:3000/api/v1/user/repos
 
           # execute our application.
-          ./bin/Release/net5.0/UseLibgit2sharp
+          ./bin/Release/net6.0/UseLibgit2sharp
 
           # list the local repository log.
           git --git-dir tmp/test/.git log --oneline
