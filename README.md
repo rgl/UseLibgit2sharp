@@ -21,21 +21,28 @@ docker run \
     -e SECRET_KEY=abracadabra \
     -p 3000:3000 \
     gitea/gitea:1.17.2
+
+# set the user credentials.
+GITEA_USERNAME='jane.doe'
+GITEA_PASSWORD='password'
+GITEA_EMAIL="$GITEA_USERNAME@example.com"
+
 # create user in gitea.
 docker exec --user git gitea gitea admin user create \
     --admin \
-    --email jane.doe@example.com \
-    --username jane.doe \
-    --password password
+    --email "$GITEA_EMAIL" \
+    --username "$GITEA_USERNAME" \
+    --password "$GITEA_PASSWORD"
 # create remote repository in gitea.
 curl \
     -s \
+    -u "$GITEA_USERNAME:$GITEA_PASSWORD" \
     -X POST \
     -H 'Accept: application/json' \
-    -H 'Authorization: Basic amFuZS5kb2U6cGFzc3dvcmQ=' \
     -H 'Content-Type: application/json' \
     -d '{"name": "test"}' \
-    http://localhost:3000/api/v1/user/repos
+    http://localhost:3000/api/v1/user/repos \
+    | jq
 ```
 
 Execute the example application:
