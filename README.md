@@ -12,7 +12,7 @@ Start a temporary git server to host our test remote repository:
 # start gitea in background.
 # see https://docs.gitea.io/en-us/config-cheat-sheet/
 # see https://github.com/go-gitea/gitea/releases
-# see https://github.com/go-gitea/gitea/blob/v1.16.8/docker/root/etc/s6/gitea/setup
+# see https://github.com/go-gitea/gitea/blob/v1.17.2/docker/root/etc/s6/gitea/setup
 docker run \
     --detach \
     --name gitea \
@@ -20,7 +20,7 @@ docker run \
     -v /etc/localtime:/etc/localtime:ro \
     -e SECRET_KEY=abracadabra \
     -p 3000:3000 \
-    gitea/gitea:1.16.8
+    gitea/gitea:1.17.2
 # create user in gitea.
 docker exec --user git gitea gitea admin user create \
     --admin \

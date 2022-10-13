@@ -5,7 +5,7 @@ jobs:
     runs-on: ubuntu-20.04
     services:
       gitea:
-        image: gitea/gitea:1.16.8
+        image: gitea/gitea:1.17.2
         options: --name gitea
         volumes:
           - /etc/timezone:/etc/timezone:ro
