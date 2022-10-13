@@ -33,6 +33,16 @@ docker exec --user git gitea gitea admin user create \
     --email "$GITEA_EMAIL" \
     --username "$GITEA_USERNAME" \
     --password "$GITEA_PASSWORD"
+curl \
+    -s \
+    -u "$GITEA_USERNAME:$GITEA_PASSWORD" \
+    -X 'PATCH' \
+    -H 'Accept: application/json' \
+    -H 'Content-Type: application/json' \
+    -d "{\"full_name\": \"$GITEA_USERNAME\"}" \
+    "http://localhost:3000/api/v1/user/settings" \
+    | jq
+
 # create remote repository in gitea.
 curl \
     -s \
