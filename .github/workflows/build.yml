@@ -2,7 +2,7 @@ name: Build
 on: [push]
 jobs:
   build:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
     services:
       gitea:
         image: gitea/gitea:1.17.2
