@@ -3,63 +3,36 @@ on: [push]
 jobs:
   build:
     runs-on: ubuntu-22.04
-    services:
-      gitea:
-        image: gitea/gitea:1.17.2
-        options: --name gitea
-        volumes:
-          - /etc/timezone:/etc/timezone:ro
-          - /etc/localtime:/etc/localtime:ro
-        env:
-          SECRET_KEY: abracadabra
-        ports:
-          - 3000:3000
     steps:
       - uses: actions/checkout@v3
-      - name: Setup .NET Core SDK
-        uses: actions/setup-dotnet@v2
-        with:
-          dotnet-version: '6.0.402'
-      - name: Restore
-        run: dotnet restore
       - name: Build
-        run: dotnet build --no-restore --configuration Release -warnAsError
+        run: |
+          set -euxo pipefail
+          docker compose build
+          docker compose --profile test build
       - name: Test
         run: |
-          # set the user credentials.
-          GITEA_USERNAME='jane.doe'
-          GITEA_PASSWORD='password'
-          GITEA_EMAIL="$GITEA_USERNAME@example.com"
+          set -euxo pipefail
 
-          # create user in gitea.
-          docker exec --user git gitea gitea admin user create \
-            --admin \
-            --email "$GITEA_EMAIL" \
-            --username "$GITEA_USERNAME" \
-            --password "$GITEA_PASSWORD"
-          curl \
+          # execute the gitea git server.
+          docker compose up --detach
+
+          # wait for gitea to be available.
+          GIT_USER_USERNAME=jane.doe
+          GIT_USER_PASSWORD=password
+          while [ -z "$(
+            curl \
               -s \
-              -u "$GITEA_USERNAME:$GITEA_PASSWORD" \
-              -X 'PATCH' \
+              -u "$GIT_USER_USERNAME:$GIT_USER_PASSWORD" \
+              -X GET \
               -H 'Accept: application/json' \
-              -H 'Content-Type: application/json' \
-              -d "{\"full_name\": \"$GITEA_USERNAME\"}" \
-              "http://localhost:3000/api/v1/user/settings" \
-              | jq
-
-          # create remote repository in gitea.
-          curl \
-            -s \
-            -u "$GITEA_USERNAME:$GITEA_PASSWORD" \
-            -X POST \
-            -H 'Accept: application/json' \
-            -H 'Content-Type: application/json' \
-            -d '{"name": "test"}' \
-            http://localhost:3000/api/v1/user/repos \
-            | jq
+              "http://localhost:3000/api/v1/repos/$GIT_USER_USERNAME/test" \
+              | grep test)" ]; do
+            sleep 3
+          done
 
           # execute our application.
-          ./bin/Release/net6.0/UseLibgit2sharp
+          docker compose run test
 
           # list the local repository log.
           git --git-dir tmp/test/.git log --oneline

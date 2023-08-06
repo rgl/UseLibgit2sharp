@@ -1,0 +1,13 @@
+# syntax=docker/dockerfile:1.4
+
+FROM gitea/gitea:1.17.2
+RUN <<EOF
+apk add --update --no-cache \
+  curl
+EOF
+RUN <<EOF
+cat >>/etc/s6/gitea/setup <<END
+ash gitea-init.ash &
+END
+EOF
+COPY --chmod=655 gitea-init.ash /etc/s6/gitea/

@@ -1,0 +1,32 @@
+# see https://github.com/compose-spec/compose-spec/blob/master/spec.md
+# see https://github.com/opencontainers/image-spec/blob/master/annotations.md
+services:
+  gitea:
+    build:
+      dockerfile: Dockerfile.gitea
+    environment:
+      - SECRET_KEY=abracadabra
+      - ADMIN_USERNAME=jane.doe
+      - ADMIN_PASSWORD=password
+      - ADMIN_EMAIL=jane.doe@example.com
+    volumes:
+      - /etc/timezone:/etc/timezone:ro
+      - /etc/localtime:/etc/localtime:ro
+    ports:
+      - 3000:3000
+  test:
+    profiles:
+      - test
+    depends_on:
+      - gitea
+    build:
+      dockerfile: Dockerfile
+    environment:
+      - GIT_USER_NAME=Jane Doe
+      - GIT_USER_EMAIL=jane.doe@example.com
+      - GIT_USER_USERNAME=jane.doe
+      - GIT_USER_PASSWORD=password
+      - GIT_REPOSITORY_URL=http://gitea:3000/jane.doe/test.git
+    working_dir: /host
+    volumes:
+      - .:/host

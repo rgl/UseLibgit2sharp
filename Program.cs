@@ -22,11 +22,11 @@ namespace UseLibgit2sharp
         //    see https://github.com/libgit2/libgit2sharp/pull/1618
         static void Main(string[] args)
         {
-            var repositoryUrl = "http://localhost:3000/jane.doe/test.git";
-            var userName = "Jane Doe";
-            var userEmail = "jane.doe@example.com";
-            var userUsername = "jane.doe";
-            var userPassword = "password";
+            var repositoryUrl = Environment.GetEnvironmentVariable("GIT_REPOSITORY_URL") ?? "http://localhost:3000/jane.doe/test.git";
+            var userName = Environment.GetEnvironmentVariable("GIT_USER_NAME") ?? "Jane Doe";
+            var userEmail = Environment.GetEnvironmentVariable("GIT_USER_EMAIL") ?? "jane.doe@example.com";
+            var userUsername = Environment.GetEnvironmentVariable("GIT_USER_USERNAME") ?? "jane.doe";
+            var userPassword = Environment.GetEnvironmentVariable("GIT_USER_PASSWORD") ?? "password";
 
             Console.WriteLine($"Using libgit2sharp {GlobalSettings.Version}");
 
