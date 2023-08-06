@@ -28,25 +28,30 @@ namespace UseLibgit2sharp
             var userUsername = "jane.doe";
             var userPassword = "password";
 
-            Console.WriteLine($"libgit2sharp version: {GlobalSettings.Version}");
+            Console.WriteLine($"Using libgit2sharp {GlobalSettings.Version}");
 
             // create the temporary directory that will host our local test repository.
+            Console.WriteLine("Deleting the tmp directory...");
             DeleteDirectory("tmp");
             Directory.CreateDirectory("tmp");
 
             // initialize a test repository.
+            Console.WriteLine("Initializing the tmp/test repository...");
             var testRepositoryPath = Repository.Init(@"tmp/test");
 
             // create sample content.
+            Console.WriteLine("Creating the example content...");
             File.WriteAllText("tmp/test/message.txt", "Hello World");
 
             // add sample content to the test repository and push it to origin.
             using (var repo = new Repository(testRepositoryPath))
             {
                 // stage all the working directory changes.
+                Console.WriteLine("Staging...");
                 Commands.Stage(repo, "*");
 
                 // commit the staged changes.
+                Console.WriteLine("Committing...");
                 var author = new Signature(userName, userEmail, DateTimeOffset.Now);
                 var committer = author;
                 var commit = repo.Commit("hello world", author, committer);
@@ -55,6 +60,7 @@ namespace UseLibgit2sharp
                 var remote = repo.Network.Remotes.Add("origin", repositoryUrl);
 
                 // push the master branch to the origin remote repository.
+                Console.WriteLine("Pushing...");
                 var pushOptions = new PushOptions
                 {
                     CredentialsProvider = new CredentialsHandler(
